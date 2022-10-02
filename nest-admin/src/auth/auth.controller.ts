@@ -1,7 +1,7 @@
-import { BadRequestException, Body, Controller, NotFoundException, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Post, Req, Res } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { UserService } from 'src/user/user.service';
 import { RegisterDto } from './models/register.dto';
 
@@ -33,7 +33,7 @@ export class AuthController {
     async login(
         @Body('email') email: string,
         @Body('password') password: string,
-        @Res({passthrough: true}) response: Response
+        @Res() response: Response
     ) {
         //https://github.com/nextauthjs/next-auth/discussions/4322
         const user = await this.userService.findOne({where: {email: email}});
@@ -50,6 +50,14 @@ export class AuthController {
         response.cookie('jwt', jwt, {httpOnly: true});
 
         return user;
+    }
+
+    @Get('user')
+    async user(@Req() request: Request) {
+        const cookie = request.cookies['jwt'];
+        const data = await this.jwtService.verifyAsync(cookie);
+        
+        return this.userService.findOne({where: {id: data['id']}});
     }
     
 }
