@@ -1,10 +1,11 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Post, Req, Res } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Post, Req, Res, UseInterceptors } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import { UserService } from 'src/user/user.service';
 import { RegisterDto } from './models/register.dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller()
 export class AuthController {
 
@@ -33,7 +34,7 @@ export class AuthController {
     async login(
         @Body('email') email: string,
         @Body('password') password: string,
-        @Res() response: Response
+        @Res({passthrough: true}) response: Response
     ) {
         //https://github.com/nextauthjs/next-auth/discussions/4322
         const user = await this.userService.findOne({where: {email: email}});
@@ -58,6 +59,15 @@ export class AuthController {
         const data = await this.jwtService.verifyAsync(cookie);
         
         return this.userService.findOne({where: {id: data['id']}});
+    }
+
+    @Post('logout')
+    async logout(@Res({passthrough: true}) response: Response) {
+        response.clearCookie('jwt');
+
+        return {
+            message: 'Success'
+        }
     }
     
 }
