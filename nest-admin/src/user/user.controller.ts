@@ -15,8 +15,8 @@ export class UserController {
     }
 
     @Get()
-    async all(@Query('page') page = 1): Promise<User[]> {
-        return await this.userService.paginate(page);
+    async all(@Query('page') page = 1) {
+        return await this.userService.paginate(page, ['role']);
     }
 
     @Post()
@@ -34,7 +34,12 @@ export class UserController {
 
     @Get(':id')
     async get(@Param('id') id: number) {
-        return await this.userService.findOne({where: {id: id}});
+        return await this.userService.findOne({
+            where: {
+              id: id
+            },
+            relations: ['role']
+          });
     }
 
     @Put(':id')
