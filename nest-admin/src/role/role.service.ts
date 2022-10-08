@@ -18,6 +18,8 @@ export class RoleService {
     }
 
     async findOne(condition): Promise<Role> {
+        //console.log(JSON.stringify(condition, null, 2));
+
         return await this.roleRepository.findOne(condition);
     }
 
