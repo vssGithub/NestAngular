@@ -1,6 +1,8 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, forwardRef, Get, Inject, Param, Post, Put, Query, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
+import { Request } from 'express';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthService } from 'src/auth/auth.service';
 import { UserCreateDto } from './models/user-create.dto';
 import { UserUpdateDto } from './models/user-update.dto';
 import { User } from './models/user.entity';
@@ -10,7 +12,11 @@ import { UserService } from './user.service';
 @UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
-    constructor(private userService: UserService) {
+    //https://www.youtube.com/watch?v=gWMPGDG42SA   ...circular dependency
+    constructor(
+        @Inject(forwardRef(() => UserService)) private userService: UserService,
+        private authService: AuthService
+    ) {
         
     }
 
@@ -42,6 +48,38 @@ export class UserController {
           });
     }
 
+    @Put('info')
+    async updateInfo(
+        @Req() request: Request,
+        @Body() body: UserUpdateDto
+    ) {
+        const id = await this.authService.userId(request);
+        await this.userService.update(id, body);
+        
+        return await this.userService.findOne({where: {id: id}});
+    }
+
+    @Put('password')
+    async updatePassword(
+        @Req() request: Request,
+        @Body('password') password: string,
+        @Body('password_confirm') password_confirm: string
+    ) {
+        if (password !== password_confirm) {
+            throw new BadRequestException('Passwords do not match');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const id = await this.authService.userId(request);
+
+        await this.userService.update(id, {
+            password: hashedPassword
+        });
+        
+        return await this.userService.findOne({where: {id: id}});
+    }
+
+
     @Put(':id')
     async update(
         @Param('id') id: number,
@@ -53,6 +91,7 @@ export class UserController {
             ...data,
             role: {id: role_id}
         });
+
         return await this.userService.findOne({where: {id: id}});
     }
 
