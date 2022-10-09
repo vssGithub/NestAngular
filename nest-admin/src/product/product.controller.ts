@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ProductCreateDto } from './models/product-create.dto';
 import { ProductUpdateDto } from './models/product-update.dto';
@@ -33,5 +33,10 @@ export class ProductController {
     ) {
         await this.productService.update(id, body);
         return this.productService.findOne({where: {id: id}});
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: number) {
+        return await this.productService.delete(id);
     }
 }
