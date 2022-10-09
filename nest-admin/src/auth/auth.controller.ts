@@ -4,6 +4,7 @@ import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import { UserService } from 'src/user/user.service';
 import { AuthGuard } from './auth.guard';
+import { AuthService } from './auth.service';
 import { RegisterDto } from './models/register.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -12,7 +13,8 @@ export class AuthController {
 
     constructor(
         private userService: UserService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private authService: AuthService
     ) {}
     
     @Post('register')
@@ -58,10 +60,9 @@ export class AuthController {
     @UseGuards(AuthGuard)
     @Get('user')
     async user(@Req() request: Request) {
-        const cookie = request.cookies['jwt'];
-        const data = await this.jwtService.verifyAsync(cookie);
+        const id = await this.authService.userId(request);
         
-        return this.userService.findOne({where: {id: data['id']}});
+        return this.userService.findOne({where: {id: id}});
     }
 
     @UseGuards(AuthGuard)
