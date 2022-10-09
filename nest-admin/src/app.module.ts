@@ -5,6 +5,7 @@ import { CommonModule } from './common/common.module';
 import { PermissionModule } from './permission/permission.module';
 import { RoleModule } from './role/role.module';
 import { UserModule } from './user/user.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { UserModule } from './user/user.module';
     AuthModule,
     CommonModule,
     RoleModule,
-    PermissionModule
+    PermissionModule,
+    ProductModule
   ],
   controllers: [],
   providers: [],
