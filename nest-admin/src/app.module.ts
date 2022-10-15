@@ -6,6 +6,7 @@ import { PermissionModule } from './permission/permission.module';
 import { ProductModule } from './product/product.module';
 import { RoleModule } from './role/role.module';
 import { UserModule } from './user/user.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { UserModule } from './user/user.module';
     CommonModule,
     RoleModule,
     PermissionModule,
-    ProductModule
+    ProductModule,
+    OrderModule
   ],
   controllers: [],
   providers: [],
