@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
+import { OrderModule } from './order/order.module';
+import { PermissionGuard } from './permission/permission.guard';
 import { PermissionModule } from './permission/permission.module';
 import { ProductModule } from './product/product.module';
 import { RoleModule } from './role/role.module';
 import { UserModule } from './user/user.module';
-import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -29,6 +31,11 @@ import { OrderModule } from './order/order.module';
     OrderModule
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard
+    }
+  ],
 })
 export class AppModule {}
