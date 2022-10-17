@@ -3,6 +3,7 @@ import * as bcrypt from 'bcryptjs';
 import { Request } from 'express';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AuthService } from 'src/auth/auth.service';
+import { HasPermission } from 'src/permission/has-permission.decorator';
 import { UserCreateDto } from './models/user-create.dto';
 import { UserUpdateDto } from './models/user-update.dto';
 import { User } from './models/user.entity';
@@ -21,11 +22,13 @@ export class UserController {
     }
 
     @Get()
+    @HasPermission('users')
     async all(@Query('page') page = 1) {
         return await this.userService.paginate(page, ['role']);
     }
 
     @Post()
+    @HasPermission('users')
     async create(@Body() body: UserCreateDto): Promise<User> {
         const password = await bcrypt.hash('1234', 12);
 
@@ -39,6 +42,7 @@ export class UserController {
     }
 
     @Get(':id')
+    @HasPermission('users')
     async get(@Param('id') id: number) {
         return await this.userService.findOne({
             where: {
@@ -81,6 +85,7 @@ export class UserController {
 
 
     @Put(':id')
+    @HasPermission('users')
     async update(
         @Param('id') id: number,
         @Body() body: UserUpdateDto
@@ -96,6 +101,7 @@ export class UserController {
     }
 
     @Delete(':id')
+    @HasPermission('users')
     async delete(@Param('id') id: number) {
         return await this.userService.delete(id);
     }

@@ -9,6 +9,10 @@ import { RoleService } from './role.service';
     TypeOrmModule.forFeature([Role])
   ],
   controllers: [RoleController],
-  providers: [RoleService]
+  providers: [RoleService],
+
+  //https://github.com/nestjs/nest/issues/1783
+  // needed export
+  exports: [RoleService]
 })
 export class RoleModule {}
