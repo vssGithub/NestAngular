@@ -1,5 +1,5 @@
-<main class="form-signin w-100 m-auto" (submit)="submit()">
-    <form>
+<main class="form-signin w-100 m-auto" >
+    <form (submit)="submit()">
       <h1 class="h3 mb-3 fw-normal">Please register</h1>
   
       <input [(ngModel)]="first_name" name="first_name" class="form-control" placeholder="First Name" required>
